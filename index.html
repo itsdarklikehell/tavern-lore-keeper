@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1A120C">
+    <title>The Tavern Lore Keeper</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --leather-deep: #120C07;
+            --leather: #1A120C;
+            --leather-mid: #241A10;
+            --parchment: #EFE3C6;
+            --parchment-dim: #D9C69E;
+            --ink: #2A1E12;
+            --ink-soft: #4A3820;
+            --gold: #C9A227;
+            --gold-dim: #8A6D1F;
+            --wax: #8E2F2F;
+            --cream: #F0E6CC;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'IM Fell English', Georgia, serif;
+            color: var(--cream);
+            background:
+                radial-gradient(90% 70% at 50% 12%, #33250F 0%, var(--leather) 55%, var(--leather-deep) 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(38% 30% at 50% 26%, rgba(255, 190, 90, 0.10) 0%, rgba(255, 190, 90, 0) 70%);
+            animation: flicker 7s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.06;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.82; }
+            25% { opacity: 0.94; }
+            75% { opacity: 0.88; }
+        }
+
+        .tome {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 7vh 24px 9vh;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 26px;
+        }
+
+        header { text-align: center; }
+
+        .kicker {
+            font-size: 14px;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin: 0 0 10px;
+            opacity: 0.9;
+        }
+
+        h1 {
+            font-family: 'IM Fell English SC', Georgia, serif;
+            font-size: 42px;
+            font-weight: 400;
+            margin: 0;
+            letter-spacing: 0.02em;
+            color: var(--cream);
+            text-shadow: 0 2px 18px rgba(201, 162, 39, 0.25);
+        }
+
+        .rule {
+            width: 220px;
+            height: 1px;
+            margin: 16px auto 0;
+            background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+            position: relative;
+        }
+        .rule::after {
+            content: '✦';
+            position: absolute;
+            left: 50%;
+            top: -9px;
+            transform: translateX(-50%);
+            color: var(--gold);
+            font-size: 12px;
+        }
+
+        /* ---------- guide ---------- */
+        .guide {
+            width: 100%;
+            max-width: 560px;
+            background: rgba(18, 12, 7, 0.55);
+            border: 1px solid rgba(201, 162, 39, 0.22);
+            border-radius: 6px;
+            padding: 20px 26px;
+        }
+
+        .guide-label {
+            font-size: 12px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin: 0 0 10px;
+            text-align: center;
+        }
+
+        .guide p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: rgba(240, 230, 204, 0.8);
+            margin: 0;
+            text-align: center;
+        }
+
+        .guide em { color: var(--cream); font-style: italic; }
+
+        /* ---------- generators ---------- */
+        .generators {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .gen-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .gen-btn {
+            font-family: 'IM Fell English SC', Georgia, serif;
+            font-size: 15px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--parchment-dim);
+            background: transparent;
+            border: 1px solid rgba(201, 162, 39, 0.35);
+            border-radius: 4px;
+            padding: 9px 16px;
+            cursor: pointer;
+            transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+        }
+        .gen-btn:hover { border-color: var(--gold); color: var(--cream); }
+        .gen-btn.selected {
+            background: var(--gold-dim);
+            border-color: var(--gold-dim);
+            color: var(--leather-deep);
+        }
+
+        .gen-btn.offering {
+            background: linear-gradient(180deg, #E4C860, var(--gold) 55%, #B08A1E);
+            border-color: rgba(240, 230, 204, 0.5);
+            color: var(--leather-deep);
+            box-shadow: 0 8px 22px -10px rgba(201, 162, 39, 0.5);
+            font-size: 16px;
+            padding: 12px 28px;
+        }
+        .gen-btn.offering:hover { filter: brightness(1.06); }
+
+        /* ---------- the card ---------- */
+        .card {
+            width: 100%;
+            max-width: 560px;
+            background:
+                radial-gradient(120% 100% at 50% 0%, #F6EBD2 0%, var(--parchment) 55%, var(--parchment-dim) 100%);
+            border-radius: 6px;
+            color: var(--ink);
+            padding: 32px 32px 28px;
+            box-shadow:
+                0 24px 60px -18px rgba(0, 0, 0, 0.75),
+                inset 0 0 0 1px rgba(138, 109, 31, 0.35),
+                inset 0 0 46px rgba(138, 109, 31, 0.12);
+            text-align: center;
+            display: none;
+            opacity: 0;
+        }
+
+        .card.shown {
+            display: block;
+            animation: draw 600ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        }
+
+        @keyframes draw {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .card-kind {
+            font-size: 12px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin: 0 0 14px;
+        }
+
+        .card-title {
+            font-family: 'IM Fell English SC', Georgia, serif;
+            font-size: 26px;
+            line-height: 1.2;
+            margin: 0 0 14px;
+            color: var(--ink);
+        }
+
+        .card-body {
+            font-size: 19px;
+            font-style: italic;
+            line-height: 1.55;
+            margin: 0;
+            color: var(--ink-soft);
+        }
+
+        .card-body + .card-body { margin-top: 12px; }
+
+        /* ---------- the evening's offering ---------- */
+        .spread {
+            width: 100%;
+            max-width: 560px;
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .spread.show { display: flex; }
+
+        .spread-item {
+            background: rgba(18, 12, 7, 0.55);
+            border: 1px solid rgba(201, 162, 39, 0.22);
+            border-radius: 6px;
+            padding: 18px 24px;
+            text-align: center;
+        }
+
+        .spread-kind {
+            font-size: 11px;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin: 0 0 8px;
+        }
+
+        .spread-title {
+            font-family: 'IM Fell English SC', Georgia, serif;
+            font-size: 20px;
+            margin: 0 0 8px;
+            color: var(--cream);
+        }
+
+        .spread-body {
+            font-size: 16px;
+            font-style: italic;
+            line-height: 1.5;
+            margin: 0;
+            color: rgba(240, 230, 204, 0.8);
+        }
+
+        .note {
+            font-style: italic;
+            font-size: 15px;
+            color: rgba(240, 230, 204, 0.55);
+            margin: 0;
+            min-height: 20px;
+            text-align: center;
+        }
+
+        footer {
+            font-size: 14px;
+            font-style: italic;
+            color: rgba(240, 230, 204, 0.4);
+            text-align: center;
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .footer-credit {
+            font-size: 13px;
+            font-style: italic;
+            color: rgba(240, 230, 204, 0.5);
+            margin: 0;
+        }
+
+        .footer-credit em {
+            color: var(--gold-dim);
+            font-style: italic;
+        }
+
+        @media (max-width: 560px) {
+            .tome { padding: 5vh 16px 8vh; }
+            h1 { font-size: 32px; }
+            .card { padding: 28px 22px; }
+            .card-body { font-size: 17px; }
+            .card-title { font-size: 22px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="tome">
+        <header>
+            <p class="kicker">from the keeper's own notebook</p>
+            <h1>The Tavern Lore Keeper</h1>
+            <div class="rule"></div>
+        </header>
+
+        <section class="guide" aria-label="how to use">
+            <p class="guide-label">what this is</p>
+            <p>Every tavern has a story — and this keeper has written most of them down. Generate a <em>tavern</em>, a <em>rumor</em>, a <em>mysterious patron</em>, or a <em>cursed item</em> for your table, or take the whole evening's offering at once.</p>
+        </section>
+
+        <section class="generators" aria-label="generators">
+            <div class="gen-row" role="group" aria-label="choose a generator">
+                <button class="gen-btn selected" data-gen="tavern">a tavern</button>
+                <button class="gen-btn" data-gen="rumor">a rumor</button>
+                <button class="gen-btn" data-gen="patron">a patron</button>
+                <button class="gen-btn" data-gen="item">a cursed item</button>
+            </div>
+            <div class="gen-row">
+                <button class="gen-btn offering" id="offeringBtn">the evening's offering</button>
+            </div>
+        </section>
+
+        <article class="card" id="card" aria-live="polite">
+            <p class="card-kind" id="cardKind"></p>
+            <h2 class="card-title" id="cardTitle"></h2>
+            <p class="card-body" id="cardBody"></p>
+        </article>
+
+        <div class="spread" id="spread" aria-live="polite"></div>
+
+        <p class="note" id="note"></p>
+
+        <footer>
+            <p>the keeper's notebook never runs dry</p>
+            <p class="footer-credit">penned by <em>Daanish</em> of <em>Chaos Collective Labs</em> — may your omens be kind and your dice be true</p>
+        </footer>
+    </main>
+
+    <script>
+        /* ============================================================
+           ENGINE — pure functions, no DOM. Extracted and exported by
+           the test harness. rng is injected so tests are deterministic.
+           ============================================================ */
+
+        const TAVERN_PREFIXES = [
+            'The Unquiet', 'The Gilded', 'The Salt', 'The Hollow', 'The Weeping',
+            'The Drunken', 'The Silent', 'The Brass', 'The Drowned', 'The Last',
+            'The Copper', 'The Frayed', 'The Midnight', 'The Honest', 'The Crooked',
+            'The Patient', 'The Falling', 'The Borrowed', 'The Amber', 'The Reluctant'
+        ];
+
+        const TAVERN_NOUNS = [
+            'Cask', 'Fox', 'Gull', 'Lantern', 'Harp', 'Mule', 'Wheel', 'Oak',
+            'Rose', 'Coin', 'Stag', 'Serpent', 'Flask', 'Key', 'Anchor', 'Thistle'
+        ];
+
+        const TAVERN_FLAVOR = [
+            'the floorboards groan like an old confession',
+            'the barmaid knows every name in the room and speaks none of them',
+            'the ale tastes faintly of regret, but the regulars insist it is character',
+            'a fire burns that no one remembers lighting',
+            'the coins on the counter are always slightly warm',
+            'somewhere upstairs, a door opens and closes that does not exist',
+            'the house cat is older than the town and twice as judgmental',
+            'the window seats are reserved for people who are not here yet',
+            'the bard is good, but the song is always about the same red-haired thief',
+            'the stairs creak in a pattern that spells a name, if you have the patience'
+        ];
+
+        const RUMOR_TARGETS = [
+            'the old road north of town', 'the cellar beneath the mill', 'the man who drinks alone',
+            'the locked tower on the hill', 'the bridge that appears in fog', 'the woods behind the church',
+            'the merchant who never blinks', 'the well in the market square', 'the innkeeper\u2019s brother',
+            'the ship that docked at midnight'
+        ];
+
+        const RUMOR_CLAIMS = [
+            'is not on any map', 'changes shape at dusk', 'pays in silver that turns to ash by morning',
+            'has been dead for years and is still paying rent', 'was built by something that is still inside it',
+            'only appears to those who have already given up', 'knows your name but will not say it',
+            'was seen walking away from its own funeral', 'has started answering questions before they are asked',
+            'leaves footprints that face the wrong way'
+        ];
+
+        const RUMOR_WHISPERS = [
+            'the one who tells you this will swear it on their mother\u2019s grave — do not test them',
+            'the teller claims to have seen it themselves, last harvest',
+            'no one will say where the rumor started, which is its own kind of proof',
+            'the teller will suddenly remember urgent business if you ask for details',
+            'a coin changes hands as the rumor is passed — coin the teller refuses to spend'
+        ];
+
+        const PATRON_LOOKS = [
+            'a woman in a coat too fine for this tavern',
+            'a man with one glove and a perfect memory for wrongs',
+            'a child who orders nothing and eats everything',
+            'an old soldier with a new scar over an old one',
+            'a hooded figure who smells of rain and cold iron',
+            'a smiling merchant whose smile does not reach their eyes',
+            'a dwarf with a purse that never seems to empty',
+            'a bard who has not touched their instrument all evening'
+        ];
+
+        const PATRON_SECRETS = [
+            'they are looking for someone who is not here yet — and they think it is you',
+            'they owe a debt to the thing that lives under the tavern',
+            'they have been dead for three years and are simply very committed to the social scene',
+            'the map they carry shows a city that does not exist, with your name on one of its streets',
+            'they can hear what the coins say when no one is spending them',
+            'they are the only survivor of a party that never came back — and they want to go back',
+            'they are wearing someone else\u2019s face, and the owner is due to arrive any moment',
+            'they have a message for you, but they will only deliver it after you have bought three rounds'
+        ];
+
+        const ITEM_NAMES = [
+            'The Glass of Hindsight', 'The Coin That Remembers', 'The Lantern of Lost Causes',
+            'The Map of Unfinished Journeys', 'The Key to the Door You Never Opened',
+            'The Mirror of the Second Guess', 'The Hourglass of Borrowed Time', 'The Compass of Almost',
+            'The Quill of Unsent Letters', 'The Bell That Rings for Others'
+        ];
+
+        const ITEM_CURSES = [
+            'shows you the face of the last person who betrayed you — it is usually your own',
+            'returns to your pocket no matter where you spend it, a little lighter each time',
+            'burns brightest when you are most lost, which its owner finds unhelpfully poetic',
+            'only ever points toward the place you decided not to go',
+            'opens only when you are already too late',
+            'shows you, for one heartbeat, what you almost chose — and you will never stop wondering',
+            'steals a minute from your future every time you use it, and it is always a minute you needed',
+            'is always almost right, which is worse than being wrong',
+            'writes letters you never meant to send, to people who will read them',
+            'rings once for every person who has given up on you, and it never stops ringing'
+        ];
+
+        function pick(arr, rng) {
+            const r = typeof rng === 'function' ? rng : Math.random;
+            return arr[Math.floor(r() * arr.length)];
+        }
+
+        function genTavern(rng) {
+            const name = pick(TAVERN_PREFIXES, rng) + ' ' + pick(TAVERN_NOUNS, rng);
+            return {
+                kind: 'a tavern',
+                title: name,
+                body: 'where ' + pick(TAVERN_FLAVOR, rng) + '.'
+            };
+        }
+
+        function genRumor(rng) {
+            return {
+                kind: 'a rumor',
+                title: 'They say…',
+                body: 'They say ' + pick(RUMOR_TARGETS, rng) + ' ' + pick(RUMOR_CLAIMS, rng) + '. ' +
+                      pick(RUMOR_WHISPERS, rng) + '.'
+            };
+        }
+
+        function genPatron(rng) {
+            return {
+                kind: 'a mysterious patron',
+                title: pick(PATRON_LOOKS, rng),
+                body: 'Secret: ' + pick(PATRON_SECRETS, rng) + '.'
+            };
+        }
+
+        function genItem(rng) {
+            return {
+                kind: 'a cursed item',
+                title: pick(ITEM_NAMES, rng),
+                body: 'It ' + pick(ITEM_CURSES, rng) + '.'
+            };
+        }
+
+        const GENERATORS = {
+            tavern: genTavern,
+            rumor: genRumor,
+            patron: genPatron,
+            item: genItem
+        };
+
+        function generate(kind, rng) {
+            const fn = GENERATORS[kind];
+            if (!fn) return null;
+            return fn(typeof rng === 'function' ? rng : Math.random);
+        }
+
+        // The evening's offering: one of each.
+        function eveningOffering(rng) {
+            const r = typeof rng === 'function' ? rng : Math.random;
+            return {
+                tavern: genTavern(r),
+                rumor: genRumor(r),
+                patron: genPatron(r),
+                item: genItem(r)
+            };
+        }
+
+        /* ============================================================
+           UI — only runs in a browser (jsdom/Node skip it)
+           ============================================================ */
+        if (typeof document !== "undefined") {
+            (function () {
+                const $card       = document.getElementById('card');
+                const $cardKind   = document.getElementById('cardKind');
+                const $cardTitle  = document.getElementById('cardTitle');
+                const $cardBody   = document.getElementById('cardBody');
+                const $spread     = document.getElementById('spread');
+                const $note       = document.getElementById('note');
+                const $offeringBtn = document.getElementById('offeringBtn');
+                const $genBtns    = Array.from(document.querySelectorAll('.gen-btn[data-gen]'));
+
+                let selectedKind = 'tavern';
+
+                function showCard(result) {
+                    $cardKind.textContent = result.kind;
+                    $cardTitle.textContent = result.title;
+                    $cardBody.textContent = result.body;
+                    $card.classList.remove('shown');
+                    void $card.offsetWidth;
+                    $card.classList.add('shown');
+                    $spread.classList.remove('show');
+                    $note.textContent = '';
+                }
+
+                function showSpread(result) {
+                    const items = [
+                        { kind: 'a tavern', title: result.tavern.title, body: result.tavern.body },
+                        { kind: 'a rumor', title: result.rumor.title, body: result.rumor.body },
+                        { kind: 'a patron', title: result.patron.title, body: result.patron.body },
+                        { kind: 'a cursed item', title: result.item.title, body: result.item.body }
+                    ];
+                    $spread.innerHTML = items.map(it =>
+                        '<div class="spread-item">' +
+                        '<p class="spread-kind">' + it.kind + '</p>' +
+                        '<p class="spread-title">' + it.title + '</p>' +
+                        '<p class="spread-body">' + it.body + '</p>' +
+                        '</div>'
+                    ).join('');
+                    $card.classList.remove('shown');
+                    $spread.classList.remove('show');
+                    void $spread.offsetWidth;
+                    $spread.classList.add('show');
+                    $note.textContent = '';
+                }
+
+                $genBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        $genBtns.forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        selectedKind = btn.dataset.gen;
+                        showCard(generate(selectedKind, Math.random));
+                    });
+                });
+
+                $offeringBtn.addEventListener('click', () => {
+                    showSpread(eveningOffering(Math.random));
+                });
+
+                // first paint: give the table something to read
+                showCard(generate(selectedKind, Math.random));
+            })();
+        }
+    </script>
+</body>
+</html>
